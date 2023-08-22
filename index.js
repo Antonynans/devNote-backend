@@ -6,7 +6,6 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
-
 dotenv.config();
 
 const app = express();
@@ -16,7 +15,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://devnotte.netlify.app/login",
+    origin: "https://devnotte.netlify.app/",
   })
 );
 
@@ -33,5 +32,3 @@ async function connect() {
   }
 }
 connect();
-
-

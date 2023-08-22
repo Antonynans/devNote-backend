@@ -149,6 +149,21 @@ router.patch("/update-users/:id", async (req, res) => {
   }
 });
 
+// delete users by id
+router.delete("/delete-users/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = await Login.findByIdAndDelete(id);
+    res.status(201).json({ message: "User successfully deleted" });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: "An error occurred",
+      error: err.message,
+    });
+  }
+});
+
 // logout
 router.get("/logout", (req, res) => {
   res.cookie("jwt", "", { maxAge: "1" });
@@ -185,7 +200,7 @@ router.delete("/delete-form/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const data = await FormModel.findByIdAndDelete(id);
-    res.status(201).json({ message: "Form successfully deleted", data });
+    res.status(201).json({ message: "Form successfully deleted" });
   } catch (err) {
     res.status(400).json({
       success: false,
