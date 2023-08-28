@@ -11,7 +11,7 @@ const router = express.Router();
 
 // auth register
 router.post("/signUpUser", async (req, res) => {
-  const { firstname, lastname, email, password } = req.body;
+  const { username, fullname, email, password } = req.body;
 
   if (password.length < 8) {
     return res
@@ -27,8 +27,8 @@ router.post("/signUpUser", async (req, res) => {
   try {
     bcrypt.hash(password, 10).then(async (hash) => {
       await Login.create({
-        firstname,
-        lastname,
+        username,
+        fullname,
         email,
         password: hash,
         otp: otpGenerated,
