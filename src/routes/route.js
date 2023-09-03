@@ -141,7 +141,6 @@ router.patch("/update-users/:id", async (req, res) => {
     const updateData = req.body;
     const options = { new: true };
 
-    console.log(updateData);
     const data = await Login.findByIdAndUpdate(id, updateData, options);
     res.json(data);
   } catch (err) {
@@ -171,17 +170,46 @@ router.get("/logout", (req, res) => {
 });
 
 // creating form
-router.post("/create-form", async (req, res) => {
-  const { title, description } = req.body;
+// router.post("/create-form", async (req, res) => {
+//   const { title, description } = req.body;
 
+//   try {
+//     await FormModel.create({ title, description }).then((form) => {
+//       res.status(201).json({ message: "Form created successfully", form });
+//     });
+//   } catch (err) {
+//     res
+//       .status(400)
+//       .json({ message: "Form not successful", error: err.message });
+//   }
+// });
+
+router.post("/create-form", async (req, res) => {
   try {
-    await FormModel.create({ title, description }).then((form) => {
-      res.status(201).json({ message: "Form created successfully", form });
+    // Extract form data from the request body
+    const { title, description, userId } = req.body;
+
+    // Check if the user exists
+    const user = await Login.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Create a new form
+    const newForm = new FormModel({
+      title,
+      description,
+      user: userId, // Associate the form with the user by their ID
     });
-  } catch (err) {
-    res
-      .status(400)
-      .json({ message: "Form not successful", error: err.message });
+
+    // Save the form to the database
+    await newForm.save();
+
+    res.status(201).json({ message: "Form created successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
@@ -221,6 +249,24 @@ router.patch("/update-form/:id", async (req, res) => {
     res.json(data);
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
+  }
+});
+
+router.get("/forms/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const user = await Login.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const forms = await FormModel.find({ user: { $in: user } });
+    return res.json(forms);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
   }
 });
 
